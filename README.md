@@ -50,6 +50,8 @@ src/
 Rules of thumb:
 - Authorization is enforced on the server: pages via `requirePageUser()` (see `(dashboard)/layout.tsx`),
   mutations via `defineAction` / `requireUser()`. Never trust client checks.
+- Layout guards do not re-run on every client-side navigation, so they are a UX gate, not the security boundary.
+  Every data read/write must independently verify the user (`requireUser()` / `defineAction`) and scope queries by user id.
 - Everything under `src/server` and `src/db/index.ts` imports `server-only`; client code cannot import it.
 - `shared/` never imports from `features/`. Features pass behavior in (e.g. `UniversalCalendar`'s `renderItem`).
 - Validate every external input with zod; return generic errors to clients and log details server-side.
@@ -58,3 +60,9 @@ Rules of thumb:
 - The app uses `drizzle-orm/neon-http` (stateless, serverless-friendly). It does not support interactive
   transactions; switch to `neon-serverless` with `DATABASE_URL_POOLED` when you need them.
 - `notes` in `src/db/schema.ts` is a scaffold table; replace it with the real domain schema.
+
+## Known gaps (intentional, tracked)
+- No rate limiting on app Server Actions yet: it needs a shared store (Upstash/Redis, or a DB table + migration).
+- No `script-src` CSP yet (needs nonces); other CSP directives and security headers are set in `next.config.ts`.
+- `/auth/[path]` (Neon `AuthView`) coexists with the custom `/login` and `/register`; pick one.
+- `DockNavbar` links to /food, /finance, /beauty modules that do not exist yet.

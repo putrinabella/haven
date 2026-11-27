@@ -52,7 +52,8 @@ export function useBaseForm<T>({
   );
 
   const detailQuery = useQuery({
-    queryKey: queryKey ?? [],
+    // A shared empty key would let unrelated forms read each other's cache.
+    queryKey: queryKey ?? ["base-form", entityName, id ?? null],
     queryFn: async () => {
       if (!id || !getDetail)
         throw new Error("ID atau getDetail tidak tersedia");

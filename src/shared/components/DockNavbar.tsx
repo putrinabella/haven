@@ -12,12 +12,20 @@ import {
   FlowerLotusIcon,
   ListHeartIcon,
 } from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 import CardBox from "./CardBox";
+
+interface DockMenu {
+  path: string;
+  label: string;
+  Icon: Icon;
+  isRoot?: boolean;
+}
 
 export default function DockNavbar() {
   const pathname = usePathname();
 
-  const subMenus: Record<string, any[]> = {
+  const subMenus: Record<string, DockMenu[]> = {
     "/food": [
       { path: "/food/dashboard", label: "Food", Icon: Hamburger },
 
@@ -41,7 +49,7 @@ export default function DockNavbar() {
   };
 
   const baseRoute = "/" + pathname.split("/")[1];
-  const activeSubMenus = subMenus[baseRoute] || [
+  const activeSubMenus: DockMenu[] = subMenus[baseRoute] || [
     { path: "/", label: "Home", Icon: House },
     { path: "/food/dashboard", label: "Food", Icon: Hamburger },
     { path: "/finance/dashboard", label: "Finance", Icon: Wallet },
@@ -66,7 +74,7 @@ export default function DockNavbar() {
             </span>
           </Link>
         )}
-        {activeSubMenus.map((menu: any) => {
+        {activeSubMenus.map((menu) => {
           const isActive = menu.isRoot
             ? pathname === menu.path
             : pathname.startsWith(menu.path);

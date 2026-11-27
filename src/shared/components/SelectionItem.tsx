@@ -1,17 +1,19 @@
 "use client";
 
 import IconRenderer from "./IconRenderer";
-type SelectionItemProps = {
-  data: any[];
-  viewType: "list" | "card";
+import type { SelectableItem, ViewType } from "@/shared/types/selection";
+
+type SelectionItemProps<T extends SelectableItem> = {
+  data: T[];
+  viewType: ViewType;
   entity: "accounts" | "categories" | string;
   selectedId?: string;
-  onSelect?: (item: any) => void;
+  onSelect?: (item: T) => void;
   expandedParentId?: string | null;
   onToggleParent?: (parentId: string) => void;
 };
 
-export default function SelectionItem({
+export default function SelectionItem<T extends SelectableItem>({
   data,
   viewType,
   entity,
@@ -19,11 +21,11 @@ export default function SelectionItem({
   onSelect,
   expandedParentId,
   onToggleParent,
-}: SelectionItemProps) {
+}: SelectionItemProps<T>) {
   if (entity === "categories") {
-    const parents = data.filter((i: any) => !i.parentId);
+    const parents = data.filter((i) => !i.parentId);
     const getChildren = (pid: string) =>
-      data.filter((i: any) => i.parentId === pid);
+      data.filter((i) => i.parentId === pid);
 
     const activeParentId = expandedParentId ?? parents[0]?.id;
 
@@ -33,7 +35,7 @@ export default function SelectionItem({
           role="tablist"
           className="flex gap-1.5 sm:gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0"
         >
-          {parents.map((parent: any) => {
+          {parents.map((parent) => {
             const isActive = activeParentId === parent.id;
             return (
               <button
@@ -79,7 +81,7 @@ export default function SelectionItem({
                 Belum ada kategori di sini
               </p>
             ) : (
-              getChildren(activeParentId).map((item: any) => (
+              getChildren(activeParentId).map((item) => (
                 <RenderItem
                   key={item.id}
                   item={item}
@@ -104,7 +106,7 @@ export default function SelectionItem({
           : "flex flex-col gap-2 sm:gap-3"
       }
     >
-      {data.map((item: any) => (
+      {data.map((item) => (
         <RenderItem
           key={item.id}
           item={item}
@@ -118,7 +120,19 @@ export default function SelectionItem({
   );
 }
 
-function RenderItem({ item, viewType, entity, isSelected, onSelect }: any) {
+function RenderItem({
+  item,
+  viewType,
+  entity,
+  isSelected,
+  onSelect,
+}: {
+  item: SelectableItem;
+  viewType: ViewType;
+  entity: string;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
   return (
     <div
       onClick={onSelect}
