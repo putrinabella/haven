@@ -1,0 +1,100 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { bgMap, isDaisyColor, DaisyColor }  from "../utils/color";
+
+interface CardBoxProps {
+  children: React.ReactNode;
+  color?: DaisyColor | string;
+  rounded?: "full" | "box" | "3xl" | "2xl" | "xl" | "lg" | "md" | "none";
+  shadowSize?: "xs" | "sm" | "md" | "lg" | "none";
+  href?: string;
+  onClick?: () => void;
+  className?: string;
+  pressable?: boolean;
+}
+
+export default function CardBox({
+  children,
+  color = "base-100",
+  rounded = "2xl",
+  shadowSize = "md",
+  href,
+  onClick,
+  className = "",
+  pressable,
+}: CardBoxProps) {
+  const isHex = color.startsWith("#");
+
+  const hasOpacitySlash = color.includes("/");
+
+  let bgClass = "";
+  if (isHex) {
+    bgClass = "";
+  } else if (hasOpacitySlash) {
+    bgClass = `bg-${color}`;
+  } else if (isDaisyColor(color)) {
+    bgClass = bgMap[color as DaisyColor];
+  }
+
+  const customStyle = isHex ? { backgroundColor: color } : {};
+
+  const roundedClassMap = {
+    full: "rounded-full",
+    box: "rounded-box",
+    "3xl": "rounded-[32px]",
+    "2xl": "rounded-3xl",
+    xl: "rounded-2xl",
+    lg: "rounded-lg",
+    md: "rounded-md",
+    none: "rounded-none",
+  };
+  const roundedClass = roundedClassMap[rounded];
+
+  const shadowClassMap = {
+    xs: "shadow-[2px_2px_0px_rgba(74,62,61,1)]",
+    sm: "shadow-[4px_4px_0px_rgba(74,62,61,1)]",
+    md: "shadow-[6px_6px_0px_rgba(74,62,61,1)]",
+    lg: "shadow-[8px_8px_0px_rgba(74,62,61,1)]",
+    none: "shadow-none",
+  };
+  const shadowClass = shadowClassMap[shadowSize];
+
+  const isLink = Boolean(href);
+  const isButton = Boolean(onClick) && !isLink;
+  const pressableStyles = pressable
+    ? "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100"
+    : "";
+  const baseStyles = `
+    border-4 border-neutral
+    ${bgClass} ${roundedClass} ${shadowClass}
+    ${pressableStyles}
+    ${className}
+  `;
+
+  if (isLink && href) {
+    return (
+      <Link href={href} className={`${baseStyles} block`} style={customStyle}>
+        {children}
+      </Link>
+    );
+  }
+  if (isButton) {
+    return (
+      <button
+        onClick={onClick}
+        className={`${baseStyles} cursor-pointer`}
+        style={customStyle}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <div className={baseStyles} style={customStyle}>
+      {children}
+    </div>
+  );
+}

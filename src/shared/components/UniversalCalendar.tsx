@@ -1,0 +1,383 @@
+"use client";
+
+import React, { useState, useMemo } from "react";
+import { CaretLeft, CaretRight, X } from "@phosphor-icons/react";
+import CardBox from "@/shared/components/CardBox";
+import { CalendarDataMap, DayData } from "../types/calendar";
+import TransactionCard from "@/features/finance/components/TransactionCard";
+import { formatRupiah } from "@/utils/rupiahFormatter";
+
+interface UniversalCalendarProps {
+  data?: CalendarDataMap;
+  title?: string;
+  onDateClick?: (dateStr: string, dayData?: DayData) => void;
+  onMonthChange?: (yearMonth: string) => void;
+  legends?: { label: string; color: string }[];
+}
+
+export default function UniversalCalendar({
+  data = {},
+  title = "Calendar",
+  onDateClick,
+  onMonthChange,
+  legends = [
+    { label: "Income", color: "bg-success" },
+    { label: "Expense", color: "bg-secondary" },
+    { label: "Both", color: "bg-accent" },
+  ],
+}: UniversalCalendarProps) {
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const formatYearMonth = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}`;
+  };
+
+  const [manualSelectedDateStr, setManualSelectedDateStr] = useState<
+    string | null
+  >(null);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+
+  const selectedDateStr = useMemo(() => {
+    if (manualSelectedDateStr) {
+      const [manYear, manMonth] = manualSelectedDateStr.split("-").map(Number);
+      if (manYear === year && manMonth === month + 1) {
+        return manualSelectedDateStr;
+      }
+    }
+
+    const formattedMonth = String(month + 1).padStart(2, "0");
+    const currentYearMonth = `${year}-${formattedMonth}`;
+    const todayYearMonth = formatYearMonth(new Date());
+
+    if (currentYearMonth === todayYearMonth) {
+      return todayStr;
+    }
+    return `${currentYearMonth}-01`;
+  }, [manualSelectedDateStr, year, month, todayStr]);
+
+  const prevMonth = () => {
+    const newDate = new Date(year, month - 1, 1);
+    setCurrentDate(newDate);
+    setManualSelectedDateStr(null);
+    if (onMonthChange) onMonthChange(formatYearMonth(newDate));
+  };
+
+  const nextMonth = () => {
+    const newDate = new Date(year, month + 1, 1);
+    setCurrentDate(newDate);
+    setManualSelectedDateStr(null);
+    if (onMonthChange) onMonthChange(formatYearMonth(newDate));
+  };
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay();
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const dayLabels = ["S", "M", "T", "W", "T", "F", "S"];
+
+  const handleCellClick = (dayNum: number) => {
+    const formattedDay = String(dayNum).padStart(2, "0");
+    const formattedMonth = String(month + 1).padStart(2, "0");
+    const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+    setManualSelectedDateStr(dateStr);
+
+    if (window.innerWidth < 768) {
+      setIsMobileModalOpen(true);
+    }
+
+    const dayData = data[dateStr];
+    if (onDateClick) onDateClick(dateStr, dayData);
+  };
+
+  const selectedDateObj = new Date(selectedDateStr + "T00:00:00");
+  const selectedDayData = data[selectedDateStr];
+
+  const renderTransactionList = () => {
+    if (selectedDayData?.items && selectedDayData.items.length > 0) {
+      return (
+        <div className="flex flex-col gap-3 pr-1 pb-2">
+          {selectedDayData.items.map((trx) => (
+            <TransactionCard key={trx.id} transaction={trx} />
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+        <p className="text-body font-bold text-neutral/50">
+          No transactions on this date.
+        </p>
+      </div>
+    );
+  };
+  return (
+    <div className="w-full flex flex-col gap-3">
+      {title && <h2 className="heading-h3 uppercase">{title}</h2>}
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        <div className="md:col-span-7 w-full">
+          <CardBox
+            color="base-100"
+            rounded="3xl"
+            className="p-4 sm:p-5 flex flex-col gap-4 border-4"
+          >
+            <div className="bg-secondary border-2 border-black rounded-2xl p-3 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <button
+                onClick={prevMonth}
+                className="w-9 h-9 bg-white border-2 border-black rounded-xl flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+              >
+                <CaretLeft size={18} weight="bold" />
+              </button>
+              <h3 className="heading-h3 font-black text-neutral">
+                {monthNames[month]} {year}
+              </h3>
+              <button
+                onClick={nextMonth}
+                className="w-9 h-9 bg-white border-2 border-black rounded-xl flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+              >
+                <CaretRight size={18} weight="bold" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-7 text-center font-black text-neutral/60 text-data">
+              {dayLabels.map((day, idx) => (
+                <div key={idx} className="py-1">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+              {Array.from({ length: firstDayIndex }).map((_, idx) => (
+                <div key={`empty-${idx}`} className="h-14 sm:h-16" />
+              ))}
+
+              {Array.from({ length: daysInMonth }).map((_, idx) => {
+                const dayNum = idx + 1;
+                const formattedDay = String(dayNum).padStart(2, "0");
+                const formattedMonth = String(month + 1).padStart(2, "0");
+                const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+                const dayData = data[dateStr];
+                const isToday = dateStr === todayStr;
+                const isSelected = dateStr === selectedDateStr;
+
+                let bgStyle = "bg-base-300/50 hover:bg-neutral-100";
+                let borderStyle = "border-transparent";
+
+                if (dayData?.badgeType === "income") {
+                  bgStyle = "bg-success/40 border-2 border-black";
+                } else if (dayData?.badgeType === "expense") {
+                  bgStyle = "bg-secondary/40 border-0";
+                } else if (dayData?.badgeType === "neutral") {
+                  bgStyle = "bg-accent/40 border-2 border-black";
+                }
+
+                if (isSelected) {
+                  borderStyle =
+                    "border-2 border-black  shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+                } else if (isToday) {
+                  borderStyle = "border-2 border-base-300";
+                }
+
+                return (
+                  <button
+                    key={dayNum}
+                    onClick={() => handleCellClick(dayNum)}
+                    className={`h-14 sm:h-16 rounded-xl flex flex-col items-center justify-between p-1.5 transition-all cursor-pointer ${bgStyle} ${borderStyle} active:scale-95`}
+                  >
+                    <span className="font-black text-data text-neutral">
+                      {dayNum}
+                    </span>
+
+                    {dayData?.badgeText ? (
+                      <span className="text-data leading-none text-base-content">
+                        {dayData.badgeText}
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-4 pt-2 px-1 text-caption font-bold text-neutral">
+              {legends.map((leg, idx) => (
+                <div key={idx} className="flex items-center gap-1.5">
+                  <span className={`w-2.5 h-2.5 rounded-full ${leg.color}`} />
+                  <span>{leg.label}</span>
+                </div>
+              ))}
+            </div>
+          </CardBox>
+        </div>
+
+        <div className="hidden md:block md:col-span-5 w-full">
+          <CardBox
+            color="base-100"
+            rounded="3xl"
+            className="p-5 flex flex-col gap-4 border-4 sticky top-6 min-h-115"
+          >
+            <div className="flex justify-between items-start pb-2 border-b-2 border-black/10">
+              <div>
+                {/* <span className="text-caption font-bold uppercase tracking-widest text-base-content/60 block mb-0.5">
+                  Selected Date Details
+                </span> */}
+                <h3 className="heading-h3 font-black text-neutral">
+                  {isNaN(selectedDateObj.getTime())
+                    ? "Select a date"
+                    : selectedDateObj.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                </h3>
+              </div>
+            </div>
+
+            {selectedDayData?.summary && (
+              <div className="grid grid-cols-2 gap-3">
+                {selectedDayData.summary.incomeTotal !== undefined && (
+                  <CardBox
+                    className="p-4 flex flex-col w-full"
+                    rounded="2xl"
+                    color="success/40"
+                    shadowSize="sm"
+                  >
+                    <span className="text-caption font-bold opacity-70 uppercase">
+                      Income
+                    </span>
+                    <span className="text-body font-black text-base-content">
+                      {formatRupiah(selectedDayData.summary.incomeTotal)}
+                    </span>
+                  </CardBox>
+                )}
+
+                {selectedDayData.summary.expenseTotal !== undefined && (
+                  <CardBox
+                    className="p-4 flex flex-col w-full"
+                    rounded="2xl"
+                    color="secondary/40"
+                    shadowSize="sm"
+                  >
+                    <span className="text-caption font-bold opacity-70 uppercase">
+                      Expense
+                    </span>
+                    <span className="text-body font-black text-base-content">
+                      {formatRupiah(selectedDayData.summary.expenseTotal)}
+                    </span>
+                  </CardBox>
+                )}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3 max-h-85 overflow-y-auto pr-1">
+              {renderTransactionList()}
+            </div>
+          </CardBox>
+        </div>
+      </div>
+
+      {isMobileModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex md:hidden items-center justify-center p-4 backdrop-blur-sm bg-black/40 animate-in fade-in duration-200"
+          onClick={() => setIsMobileModalOpen(false)}
+        >
+          <div className="w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <CardBox
+              className="max-h-[80vh] overflow-y-auto p-5 flex flex-col gap-4 border-4"
+              rounded="2xl"
+              color="base-100"
+            >
+              <div className="flex justify-between items-start mb-1 gap-4">
+                <div>
+                  <span className="text-caption font-bold uppercase tracking-widest text-base-content/60 block mb-0.5">
+                    Calendar Details
+                  </span>
+                  <h3 className="heading-h4 font-black text-neutral">
+                    {selectedDateObj.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsMobileModalOpen(false)}
+                  aria-label="Close"
+                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-base-200 border-2 border-black text-base-content hover:bg-base-300 transition-colors cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <X size={16} weight="bold" />
+                </button>
+              </div>
+
+              {selectedDayData?.summary && (
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedDayData.summary.incomeTotal !== undefined && (
+                    <CardBox
+                      className="p-4 flex flex-col w-full"
+                      rounded="2xl"
+                      color="success/40"
+                      shadowSize="sm"
+                    >
+                      <span className="text-caption font-bold opacity-70 uppercase">
+                        Income
+                      </span>
+                      <span className="text-body font-black text-base-content">
+                        {formatRupiah(selectedDayData.summary.incomeTotal)}
+                      </span>
+                    </CardBox>
+                  )}
+
+                  {selectedDayData.summary.expenseTotal !== undefined && (
+                    <CardBox
+                      className="p-4 flex flex-col w-full"
+                      rounded="2xl"
+                      color="secondary/40"
+                      shadowSize="sm"
+                    >
+                      <span className="text-caption font-bold opacity-70 uppercase">
+                        Expense
+                      </span>
+                      <span className="text-body font-black text-base-content">
+                        {formatRupiah(selectedDayData.summary.expenseTotal)}
+                      </span>
+                    </CardBox>
+                  )}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3 mt-1">
+                {renderTransactionList()}
+              </div>
+            </CardBox>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
