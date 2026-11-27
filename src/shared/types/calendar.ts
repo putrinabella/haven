@@ -1,5 +1,3 @@
-import { TransactionEntry } from "@/features/finance/transaction/transaction.types";
-
 export interface CalendarItem {
   id: string;
   title: string;
@@ -9,7 +7,7 @@ export interface CalendarItem {
   badges?: string[];
   iconSlug?: string;
   color?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DayData {
@@ -21,9 +19,9 @@ export interface DayData {
   summary?: {
     incomeTotal?: number;
     expenseTotal?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
-  items: TransactionEntry[];
+  items: CalendarItem[];
 }
 
 export type CalendarDataMap = Record<string, DayData>;

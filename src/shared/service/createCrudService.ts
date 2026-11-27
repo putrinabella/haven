@@ -1,7 +1,8 @@
 import { buildQueryString } from "./queryBuilder";
 import { apiFetch } from "./apiFetch";
-import {
+import type {
   ApiResponse,
+  PaginatedMeta,
   PaginatedResponse,
   PaginatedParams,
 } from "../types/common";
@@ -21,7 +22,7 @@ export function createCrudService<T>(basePath: string, options?: CrudOptions) {
     ): Promise<PaginatedResponse<T>> {
       const query = buildQueryString(params);
 
-      const json = await apiFetch<any>(`${basePath}${query}`, {
+      const json = await apiFetch<ApiResponse<{ items: T[]; meta: PaginatedMeta }>>(`${basePath}${query}`, {
         next: { revalidate, tags: [tag] },
       });
 
@@ -50,7 +51,7 @@ export function createCrudService<T>(basePath: string, options?: CrudOptions) {
 
     async getDetail(id: string): Promise<T | null> {
       try {
-        const json = await apiFetch<ApiResponse<T>>(`${basePath}?id=${id}`, {
+        const json = await apiFetch<ApiResponse<T>>(`${basePath}?id=${encodeURIComponent(id)}`, {
           next: { revalidate, tags: [tag] },
         });
 
@@ -79,7 +80,7 @@ export function createCrudService<T>(basePath: string, options?: CrudOptions) {
     },
 
     async delete(id: string): Promise<void> {
-      await apiFetch(`${basePath}?id=${id}`, {
+      await apiFetch(`${basePath}?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
     },

@@ -2,7 +2,7 @@
 
 import React from "react";
 import CardBox from "./CardBox";
-import { DaisyColor } from "@/utils/color";
+import { DaisyColor } from "@/shared/utils/color";
 
 interface CardHeaderProps {
   title: string;

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { DaisyColor } from "@/utils/color";
+import { DaisyColor } from "@/shared/utils/color";
 import { IndicatorLoading } from "./IndicatorLoading";
 import { IndicatorError } from "./IndicatorError";
 import { IndicatorEmpty } from "./IndicatorEmptyData";

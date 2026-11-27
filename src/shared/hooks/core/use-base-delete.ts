@@ -3,9 +3,9 @@
 import { useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { handleApiError } from "@/lib/ErrorHandler";
-import type { DaisyColor } from "@/utils/color";
-import { CrudMessages, defaultCrudMessages } from "@/utils/crudMessages";
+import { handleApiError } from "@/lib/error-handler";
+import type { DaisyColor } from "@/shared/utils/color";
+import { CrudMessages, defaultCrudMessages } from "@/shared/utils/crudMessages";
 import { showAlert } from "@/shared/components/Swal";
 
 interface UseBaseDeleteProps {
