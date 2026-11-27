@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, type ReactNode } from "react";
 import { CaretLeft, CaretRight, X } from "@phosphor-icons/react";
 import CardBox from "@/shared/components/CardBox";
-import { CalendarDataMap, DayData } from "../types/calendar";
-import TransactionCard from "@/features/finance/components/TransactionCard";
-import { formatRupiah } from "@/utils/rupiahFormatter";
+import type { CalendarDataMap, CalendarItem, DayData } from "../types/calendar";
+import { formatRupiah } from "@/shared/utils/rupiahFormatter";
 
 interface UniversalCalendarProps {
   data?: CalendarDataMap;
@@ -13,6 +12,9 @@ interface UniversalCalendarProps {
   onDateClick?: (dateStr: string, dayData?: DayData) => void;
   onMonthChange?: (yearMonth: string) => void;
   legends?: { label: string; color: string }[];
+  /** Renders one entry of the selected day. Feature code supplies its own card. */
+  renderItem?: (item: CalendarItem) => ReactNode;
+  emptyMessage?: string;
 }
 
 export default function UniversalCalendar({
@@ -20,6 +22,8 @@ export default function UniversalCalendar({
   title = "Calendar",
   onDateClick,
   onMonthChange,
+  renderItem,
+  emptyMessage = "No entries on this date.",
   legends = [
     { label: "Income", color: "bg-success" },
     { label: "Expense", color: "bg-secondary" },
@@ -112,12 +116,14 @@ export default function UniversalCalendar({
   const selectedDateObj = new Date(selectedDateStr + "T00:00:00");
   const selectedDayData = data[selectedDateStr];
 
-  const renderTransactionList = () => {
+  const renderItemList = () => {
     if (selectedDayData?.items && selectedDayData.items.length > 0) {
       return (
         <div className="flex flex-col gap-3 pr-1 pb-2">
-          {selectedDayData.items.map((trx) => (
-            <TransactionCard key={trx.id} transaction={trx} />
+          {selectedDayData.items.map((item) => (
+            <React.Fragment key={item.id}>
+              {renderItem ? renderItem(item) : <DefaultItem item={item} />}
+            </React.Fragment>
           ))}
         </div>
       );
@@ -126,7 +132,7 @@ export default function UniversalCalendar({
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
         <p className="text-body font-bold text-neutral/50">
-          No transactions on this date.
+          {emptyMessage}
         </p>
       </div>
     );
@@ -295,7 +301,7 @@ export default function UniversalCalendar({
             )}
 
             <div className="flex flex-col gap-3 max-h-85 overflow-y-auto pr-1">
-              {renderTransactionList()}
+              {renderItemList()}
             </div>
           </CardBox>
         </div>
@@ -372,12 +378,21 @@ export default function UniversalCalendar({
               )}
 
               <div className="flex flex-col gap-3 mt-1">
-                {renderTransactionList()}
+                {renderItemList()}
               </div>
             </CardBox>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function DefaultItem({ item }: { item: CalendarItem }) {
+  return (
+    <div className="rounded-lg border border-base-300 p-3">
+      <p className="font-semibold">{item.title}</p>
+      {item.description && <p className="text-sm opacity-70">{item.description}</p>}
     </div>
   );
 }

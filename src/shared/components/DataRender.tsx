@@ -1,22 +1,31 @@
 import IconRenderer from "./IconRenderer";
 import ActionButton from "./ActionButton";
 import { Pencil, Trash } from "@phosphor-icons/react";
+import type { SelectableItem, ViewType } from "@/shared/types/selection";
 
-export default function DataRenderer({
+interface DataRendererProps<T extends SelectableItem> {
+  data: T[];
+  viewType: ViewType;
+  entity: "categories" | string;
+  onEdit?: (item: T) => void;
+  onDelete?: (item: T) => void;
+}
+
+export default function DataRenderer<T extends SelectableItem>({
   data,
   viewType,
   entity,
   onEdit,
   onDelete,
-}: any) {
+}: DataRendererProps<T>) {
   if (entity === "categories") {
-    const parents = data.filter((i: any) => !i.parentId);
+    const parents = data.filter((i) => !i.parentId);
     const getChildren = (pid: string) =>
-      data.filter((i: any) => i.parentId === pid);
+      data.filter((i) => i.parentId === pid);
 
     return (
       <div className="flex flex-col gap-8">
-        {parents.map((parent: any) => (
+        {parents.map((parent) => (
           <div key={parent.id} className="flex flex-col gap-3">
             <div className="flex flex-row justify-between items-center gap-3 border-b-2 border-black pb-2">
               <h2 className="text-xl font-black uppercase tracking-wider">
@@ -37,7 +46,7 @@ export default function DataRenderer({
                   : "flex flex-col gap-3"
               }
             >
-              {getChildren(parent.id).map((item: any) =>
+              {getChildren(parent.id).map((item) =>
                 renderItem(item, viewType, onEdit, onDelete),
               )}
             </div>
@@ -54,12 +63,17 @@ export default function DataRenderer({
           : "flex flex-col gap-3"
       }
     >
-      {data.map((item: any) => renderItem(item, viewType, onEdit, onDelete))}
+      {data.map((item) => renderItem(item, viewType, onEdit, onDelete))}
     </div>
   );
 }
 
-function renderItem(item: any, viewType: any, onEdit: any, onDelete: any) {
+function renderItem<T extends SelectableItem>(
+  item: T,
+  viewType: ViewType,
+  onEdit?: (item: T) => void,
+  onDelete?: (item: T) => void,
+) {
   return (
     <div
       key={item.id}

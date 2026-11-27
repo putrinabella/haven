@@ -7,7 +7,7 @@ interface FilterOptions {
   searchKey?: string;
 }
 
-export function useDataFilters<T extends Record<string, any>>(
+export function useDataFilters<T extends Record<string, unknown>>(
   initialFilters: T,
   options: FilterOptions = {},
 ) {
@@ -24,7 +24,7 @@ export function useDataFilters<T extends Record<string, any>>(
     [searchKey]: debouncedSearchValue,
   };
 
-  const handleFilterChange = (field: keyof T, value: any) => {
+  const handleFilterChange = (field: keyof T, value: T[keyof T]) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
     setPage(1);
   };

@@ -24,10 +24,13 @@ type RadioOption = {
   value: string;
 };
 
+/** Everything a field can hold: text, numbers, toggles, or a file. */
+export type FormValue = string | number | boolean | File | null | undefined;
+
 type FormInputProps = {
   label: string;
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: FormValue;
+  onChange?: (value: FormValue) => void;
   required?: boolean;
   placeholder?: string;
   type?:
@@ -106,6 +109,9 @@ const FormInput = ({
   disableFuture = false,
   disableSundays = false,
 }: FormInputProps) => {
+  // Native <input>/<textarea> only accept string | number.
+  const textValue = typeof value === "string" || typeof value === "number" ? value : "";
+
   const normalizeOptions = (): BaseOption[] => {
     if (!options) return [];
 
@@ -177,7 +183,7 @@ const FormInput = ({
   //     ? " border-error focus:ring-2 focus:ring-error focus:border-transparent focus:outline-none"
   //     : " border-base-300 focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none") +
   //   (readOnly ? " bg-base-200 cursor-not-allowed" : " bg-base-100");
-  const [query, setQuery] = useState(value || "");
+  const [query, setQuery] = useState(typeof value === "string" ? value : "");
   const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [, setWarning] = useState<string | null>(null);
@@ -505,7 +511,7 @@ const FormInput = ({
         </label>
         <input
           type={type} // akan dinamis menjadi "date" atau "month"
-          value={value}
+          value={textValue}
           onChange={handleDateChange}
           placeholder={placeholder}
           required={required}
@@ -582,7 +588,7 @@ const FormInput = ({
         </div>
       ) : type === "textarea" ? (
         <textarea
-          value={value}
+          value={textValue}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
             onChange?.(e.target.value)
           }
@@ -597,7 +603,7 @@ const FormInput = ({
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            value={value}
+            value={textValue}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               onChange?.(e.target.value)
             }
@@ -868,7 +874,7 @@ const FormInput = ({
           )}
           <input
             type={type}
-            value={value}
+            value={textValue}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               onChange?.(e.target.value)
             }

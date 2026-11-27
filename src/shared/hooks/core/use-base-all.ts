@@ -1,9 +1,10 @@
 "use client";
 
-import { handleApiError } from "@/lib/ErrorHandler";
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { handleApiError } from "@/lib/error-handler";
+import { useEffect } from "react";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 
-interface UseBaseAllProps<T, TParams = any, TError = Error> {
+interface UseBaseAllProps<T, TParams = unknown, TError = Error> {
   queryKey: readonly unknown[];
 
   fetcher: (params?: TParams) => Promise<T[]>;
@@ -12,7 +13,7 @@ interface UseBaseAllProps<T, TParams = any, TError = Error> {
   options?: Omit<UseQueryOptions<T[], TError>, "queryKey" | "queryFn">;
 }
 
-export function useBaseAll<T, TParams = any, TError = Error>({
+export function useBaseAll<T, TParams = unknown, TError = Error>({
   queryKey,
   fetcher,
   params,
@@ -29,9 +30,10 @@ export function useBaseAll<T, TParams = any, TError = Error>({
     ...options,
   });
 
-  if (query.isError) {
-    handleApiError(query.error);
-  }
+  // Side effects belong in an effect, not in render (render can run many times).
+  useEffect(() => {
+    if (query.error) handleApiError(query.error);
+  }, [query.error]);
 
   return {
     data: query.data ?? [],

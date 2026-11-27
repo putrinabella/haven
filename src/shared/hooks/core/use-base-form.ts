@@ -3,8 +3,8 @@
 import { useMemo, useState, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { handleApiError } from "@/lib/ErrorHandler";
-import { defaultCrudMessages, type CrudMessages } from "@/utils/crudMessages";
+import { handleApiError } from "@/lib/error-handler";
+import { defaultCrudMessages, type CrudMessages } from "@/shared/utils/crudMessages";
 import { showAlert } from "@/shared/components/Swal";
 
 interface UseBaseFormProps<T> {
@@ -52,7 +52,8 @@ export function useBaseForm<T>({
   );
 
   const detailQuery = useQuery({
-    queryKey: queryKey ?? [],
+    // A shared empty key would let unrelated forms read each other's cache.
+    queryKey: queryKey ?? ["base-form", entityName, id ?? null],
     queryFn: async () => {
       if (!id || !getDetail)
         throw new Error("ID atau getDetail tidak tersedia");

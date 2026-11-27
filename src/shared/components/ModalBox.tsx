@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import CardBox from "./CardBox";
-import { DaisyColor } from "@/utils/color";
+import { DaisyColor } from "@/shared/utils/color";
 
 interface ModalBoxProps {
   isOpen: boolean;

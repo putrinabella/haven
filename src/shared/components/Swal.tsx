@@ -9,8 +9,8 @@ import {
   Info,
   HelpCircle,
 } from "lucide-react";
-import type { DaisyColor } from "@/utils/color";
-import { getButtonColorClass } from "@/utils/color";
+import type { DaisyColor } from "@/shared/utils/color";
+import { getButtonColorClass } from "@/shared/utils/color";
 
 export interface SwalOptions {
   title?: string;

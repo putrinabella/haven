@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { DaisyColor } from "@/utils/color";
+import { DaisyColor } from "@/shared/utils/color";
 import { IndicatorLoading } from "./IndicatorLoading";
 import { IndicatorError } from "./IndicatorError";
 import { IndicatorEmpty } from "./IndicatorEmptyData";
@@ -7,7 +7,7 @@ import { IndicatorEmpty } from "./IndicatorEmptyData";
 interface DataSectionProps {
   loading: boolean;
   error: boolean | Error | null;
-  data: any;
+  data: unknown;
 
   EmptyComponent?: React.ComponentType<{ message?: string }>;
   ErrorComponent?: React.ComponentType<{

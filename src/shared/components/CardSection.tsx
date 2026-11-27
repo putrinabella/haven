@@ -2,7 +2,7 @@
 
 import React from "react";
 import CardBox from "./CardBox";
-import { DaisyColor, bgMap, isDaisyColor } from "@/utils/color";
+import { DaisyColor, bgMap, isDaisyColor } from "@/shared/utils/color";
 
 interface CardSectionProps {
   children?: React.ReactNode;
