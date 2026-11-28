@@ -1,3 +1,5 @@
+"use client";
+
 import CardBox from "./CardBox";
 import { MagnifyingGlassIcon, type IconProps } from "@phosphor-icons/react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
