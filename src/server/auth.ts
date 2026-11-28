@@ -8,8 +8,12 @@ export { UnauthorizedError };
 
 /** Returns the signed-in user, or null. Always validated server-side from the session cookie. */
 export async function getUser() {
-  const { data: session } = await auth.getSession();
-  return session?.user ?? null;
+  try {
+    const { data: session } = await auth.getSession();
+    return session?.user ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** For Server Actions / route handlers: throws if there is no session. */
