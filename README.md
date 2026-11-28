@@ -5,13 +5,13 @@ Next.js (App Router) + Neon Postgres (Drizzle) + Neon Auth + TanStack Query + Ta
 ## Setup
 
 ```bash
-npm install
+bun install
 cp .env.example .env.local      # fill in real values (see below)
-npm run db:migrate              # apply migrations to your Neon database
-npm run dev
+bun run db:migrate              # apply migrations to your Neon database
+bun run dev
 ```
 
-Requires Node >= 22.18.
+Package manager: **bun** (`bun.lock` is the lockfile). Tests use Node's built-in runner, so Node >= 22.18 is also required.
 
 ## Environment
 
@@ -28,12 +28,12 @@ password, S3 keys, realtime secret) and, if the repo is or becomes public, rewri
 
 | Script | Purpose |
 | --- | --- |
-| `npm run dev` / `build` / `start` | Next.js lifecycle |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | ESLint (next core-web-vitals + typescript) |
-| `npm test` | Node's built-in test runner on `src/**/*.test.ts` |
-| `npm run check` | typecheck + lint + test |
-| `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle Kit |
+| `bun run dev` / `build` / `start` | Next.js lifecycle |
+| `bun run typecheck` | `tsc --noEmit` |
+| `bun run lint` | ESLint (next core-web-vitals + typescript) |
+| `bun run test` | Node's built-in test runner on `src/**/*.test.ts` |
+| `bun run check` | typecheck + lint + test |
+| `bun run db:generate` / `db:migrate` / `db:studio` | Drizzle Kit |
 
 ## Architecture
 
@@ -65,9 +65,9 @@ Rules of thumb:
 See [docs/security.md](docs/security.md): credential rotation checklist, CSP design/rollout, rate-limiting details.
 
 Server Actions must be exported via `defineAction({ name, input, rateLimit? }, handler)` (auth -> rate limit ->
-validation). Rate limiting needs migration `0001_rate_limits` applied (`npm run db:migrate`).
+validation). Rate limiting needs migration `0001_rate_limits` applied (`bun run db:migrate`).
 
-After the first `npm install`, run `npm run db:generate`: it must report no schema changes. If it generates anything,
+After the first `bun install`, run `bun run db:generate`: it must report no schema changes. If it generates anything,
 delete `src/db/migrations/0001_*` and `meta/0001_snapshot.json`, remove the 0001 entry from `meta/_journal.json`,
 and re-run it so drizzle-kit produces the canonical files.
 

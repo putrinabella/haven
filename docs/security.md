@@ -34,7 +34,7 @@ Never paste secrets into issues, PRs or chats; use hosting-provider env vars. `.
   unset because the Neon Auth client's network targets were not verified.
 
 Promote to enforced:
-1. `npm run build && npm start`, then exercise login, register, logout, the barcode scanner and every page.
+1. `bun run build && bun run start`, then exercise login, register, logout, the barcode scanner and every page.
 2. Open DevTools console; any "Content-Security-Policy-Report-Only" violation names the blocked source.
 3. When clean, rename the header key to `Content-Security-Policy` (replace the enforced one with this stricter set).
 

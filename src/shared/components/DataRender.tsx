@@ -1,3 +1,5 @@
+"use client";
+
 import IconRenderer from "./IconRenderer";
 import ActionButton from "./ActionButton";
 import { Pencil, Trash } from "@phosphor-icons/react";

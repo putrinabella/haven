@@ -1,3 +1,5 @@
+"use client";
+
 import type { LucideIcon } from "lucide-react";
 import { DaisyColor } from "@/shared/utils/color";
 import { IndicatorLoading } from "./IndicatorLoading";
