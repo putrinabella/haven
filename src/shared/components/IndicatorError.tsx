@@ -1,3 +1,5 @@
+"use client";
+
 import CardBox from "./CardBox";
 import { Coffee, WarningCircle } from "@phosphor-icons/react";
 

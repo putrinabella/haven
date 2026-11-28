@@ -1,3 +1,4 @@
+"use client";
 import { CircleNotch } from "@phosphor-icons/react";
 import CardBox from "./CardBox";
 
