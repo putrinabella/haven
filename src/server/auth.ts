@@ -2,12 +2,9 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 
-export class UnauthorizedError extends Error {
-  constructor() {
-    super("Unauthorized");
-    this.name = "UnauthorizedError";
-  }
-}
+import { UnauthorizedError } from "./errors";
+
+export { UnauthorizedError };
 
 /** Returns the signed-in user, or null. Always validated server-side from the session cookie. */
 export async function getUser() {

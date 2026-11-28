@@ -8,7 +8,8 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "./src/db/schema.ts",
+  // Relative imports only inside these files: drizzle-kit does not resolve the "@/" alias.
+  schema: ["./src/db/schema.ts", "./src/features/*/schema.ts"],
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: { url: process.env.DATABASE_URL },

@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { handleApiError } from "@/lib/error-handler";
+import { handleApiError } from "@/shared/utils/error-handler";
 import { defaultCrudMessages, type CrudMessages } from "@/shared/utils/crudMessages";
 import { showAlert } from "@/shared/components/Swal";
 

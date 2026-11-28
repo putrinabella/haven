@@ -90,3 +90,7 @@ Not built yet: forgot/reset password and email verification screens.
 - `DockNavbar` links to /food, /finance, /beauty modules that do not exist yet.
 - Optional hardening: `proxy.ts` with `auth.middleware({ loginUrl: "/login", publicRoutes: ["/login", "/register"] })`
   for early redirects (documented API; not added because it could not be run here). The layout guard stays the source of truth.
+
+## Architecture
+
+Tenancy, soft/hard delete, the `/api/v1` envelope and how to add a feature: see [docs/architecture.md](docs/architecture.md).

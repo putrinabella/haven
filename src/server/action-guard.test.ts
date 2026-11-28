@@ -13,7 +13,7 @@ export function findUnguardedExports(source: string): string[] {
   if (!/^\s*["']use server["']/.test(code)) return [];
   const offenders: string[] = [];
   for (const m of code.matchAll(/^export\s+(?!type\b|interface\b)(.*)$/gm)) {
-    if (!/^const\s+\w+\s*=\s*defineAction\s*\(/.test(m[1])) offenders.push(m[0].trim());
+    if (!/^const\s+\w+\s*=\s*define(?:Household)?Action\s*\(/.test(m[1])) offenders.push(m[0].trim());
   }
   return offenders;
 }
@@ -21,6 +21,7 @@ export function findUnguardedExports(source: string): string[] {
 test("detector flags unwrapped exports and accepts defineAction ones", () => {
   const ok = `"use server";\nexport const a = defineAction({ name: "a", input: s }, async () => 1);\nexport type T = 1;`;
   assert.deepEqual(findUnguardedExports(ok), []);
+  assert.deepEqual(findUnguardedExports(`"use server";\nexport const h = defineHouseholdAction({ name: "h", input: s }, async () => 1);`), []);
   assert.equal(findUnguardedExports(`"use server";\nexport async function bad() {}`).length, 1);
   assert.equal(findUnguardedExports(`"use server";\nexport const b = async () => 1;`).length, 1);
   assert.equal(findUnguardedExports(`"use server";\nexport default async function () {}`).length, 1);
