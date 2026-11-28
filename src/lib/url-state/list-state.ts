@@ -13,7 +13,7 @@ export function useListState() {
   const [state, set] = useQueryStates(listParsers);
   return {
     state,
-    setSearch: (q: string) => set({ q, page: 1 }, { history: "replace" }),
+    setSearch: (q: string) => set({ q, page: 1 }),
     setPage: (page: number) => set({ page }),
     setSort: (sort: string, dir: "asc" | "desc") => set({ sort, dir, page: 1 }),
     reset: () => set(null), // clears all keys back to defaults
