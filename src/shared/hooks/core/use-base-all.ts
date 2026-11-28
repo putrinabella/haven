@@ -1,6 +1,6 @@
 "use client";
 
-import { handleApiError } from "@/lib/error-handler";
+import { handleApiError } from "@/shared/utils/error-handler";
 import { useEffect } from "react";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 

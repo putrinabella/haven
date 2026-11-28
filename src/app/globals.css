@@ -1,29 +1,86 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: light --default;
+
+/*
+ * Haven design tokens, built on DaisyUI 5 themes.
+ * We override DaisyUI's built-in `light` and `dark` themes by reusing their names (documented
+ * behavior: unspecified values are inherited), so `data-theme="light|dark"` keeps working for a
+ * future manual toggle. With no data-theme set, the OS preference picks `dark` via `prefersdark`.
+ *
+ * Brand: background #FAF9F4, primary #3F6B47, secondary #C7D6BD. All other values are derived tints.
+ * Every *-content/background pair below was checked for WCAG AA text contrast (>= 4.5:1).
+ * Note: secondary (#C7D6BD) is only 1.45:1 against the page background, so it must never be the sole
+ * boundary of a control; fields get a stronger border below.
+ */
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: #faf9f4;
+  --color-base-200: #f0efe6;
+  --color-base-300: #d9dacd;
+  --color-base-content: #1f2a22;
+  --color-primary: #3f6b47;
+  --color-primary-content: #ffffff;
+  --color-secondary: #c7d6bd;
+  --color-secondary-content: #1f2a22;
+  --color-accent: #9db78f;
+  --color-accent-content: #16201a;
+  --color-neutral: #2f3a32;
+  --color-neutral-content: #faf9f4;
+  --color-info: #1f6fb2;
+  --color-info-content: #ffffff;
+  --color-success: #2e7d32;
+  --color-success-content: #ffffff;
+  --color-warning: #f2c14e;
+  --color-warning-content: #2b2100;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #141915;
+  --color-base-200: #1b221d;
+  --color-base-300: #2a332c;
+  --color-base-content: #e8ebe3;
+  --color-primary: #8bbf96;
+  --color-primary-content: #0f1a12;
+  --color-secondary: #2f4a36;
+  --color-secondary-content: #e3eddd;
+  --color-accent: #6f9a78;
+  --color-accent-content: #0f1a12;
+  --color-neutral: #2a332c;
+  --color-neutral-content: #e8ebe3;
+  --color-info: #6db3f2;
+  --color-info-content: #08203a;
+  --color-success: #7bcb82;
+  --color-success-content: #0b2410;
+  --color-warning: #f2c14e;
+  --color-warning-content: #2b2100;
+  --color-error: #f28b82;
+  --color-error-content: #3a0b08;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+/* WCAG 1.4.11: control boundaries need >= 3:1. 55% text-over-background measures 3.48:1 (light) / 5.22:1 (dark). */
+.input,
+.select,
+.textarea {
+  --input-color: color-mix(in srgb, var(--color-base-content) 55%, var(--color-base-100));
 }

@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Build-time placeholders only. They are not real credentials and never connect to anything:
+      # src/server/env.ts just needs well-formed values for `next build` to collect page data.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      NEON_AUTH_BASE_URL: https://auth.ci.invalid
+      NEON_AUTH_COOKIE_SECRET: ci-only-placeholder-secret-not-for-use-0123456789
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun run test
+      - run: bun run build
