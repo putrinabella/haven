@@ -71,6 +71,16 @@ After the first `bun install`, run `bun run db:generate`: it must report no sche
 delete `src/db/migrations/0001_*` and `meta/0001_snapshot.json`, remove the 0001 entry from `meta/_journal.json`,
 and re-run it so drizzle-kit produces the canonical files.
 
+## List pages: filters that survive navigation
+Filters live in the URL, not component state, so opening a detail page and coming back keeps them.
+- `useDataFilters(initial, { searchKey })` (`src/shared/hooks/use-data-filters.ts`): search (debounced), page and custom
+  string filters. Defaults are dropped from the URL; Back leaves the list rather than undoing filters.
+- List page: `const toDetail = useReturnToHref();` then `<Link href={toDetail(`/items/${id}`)}>`.
+- Detail page: `const back = useBackToList("/items");` for the "Back to list" button (`returnTo` is validated as a
+  same-origin relative path, so it cannot be used as an open redirect). The browser Back button needs no helper.
+- Components that read search params must sit inside a `<Suspense>` boundary (required by `cacheComponents`).
+- Include the filter values in the TanStack Query `queryKey`, or the cache can return data for a different filter.
+
 ## Auth routes
 Custom `/login` and `/register` (Neon `authClient`) are the single auth UI. `/auth/*` redirects to them.
 Not built yet: forgot/reset password and email verification screens.
